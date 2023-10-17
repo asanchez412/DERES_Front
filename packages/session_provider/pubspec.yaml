@@ -1,0 +1,11 @@
+name: session_provider
+description: Package responsible to provide an abstraction for User session retrieval
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  equatable: ^2.0.5
+  http: ^1.1.0
