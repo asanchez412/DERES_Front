@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:topicos/home/view/home_page.dart';
 import 'package:topicos/supplier/bloc/supplier_bloc.dart';
+import 'package:topicos/supplier/bloc/supplier_event.dart';
 
 class SupplierView extends StatelessWidget {
   const SupplierView({super.key});
@@ -9,27 +12,32 @@ class SupplierView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 3),
-                image: const DecorationImage(
-                    image: AssetImage('lib/assets/deres.png'),
-                    fit: BoxFit.cover,
-                    scale: 2),
+        title: GestureDetector(
+          onTap: () {
+            context.go(HomePage.path);
+          },
+          child: Row(
+            children: [
+              Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                  image: const DecorationImage(
+                      image: AssetImage('lib/assets/deres.png'),
+                      fit: BoxFit.cover,
+                      scale: 2),
+                ),
               ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            const Text(
-              'Proveedores',
-            ),
-          ],
+              const SizedBox(
+                width: 10,
+              ),
+              const Text(
+                'Proveedores',
+              ),
+            ],
+          ),
         ),
         centerTitle: false,
         backgroundColor: Colors.orangeAccent,
@@ -65,7 +73,11 @@ class SupplierView extends StatelessWidget {
                             child: TextField(
                               decoration:
                                   const InputDecoration(labelText: 'Nombre'),
-                              onChanged: (value) {},
+                              onChanged: (name) {
+                                context
+                                    .read<SupplierBloc>()
+                                    .add(SupplierNameChanged(name: name));
+                              },
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -73,7 +85,11 @@ class SupplierView extends StatelessWidget {
                             child: TextField(
                               decoration:
                                   const InputDecoration(labelText: 'RUT'),
-                              onChanged: (value) {},
+                              onChanged: (rut) {
+                                context
+                                    .read<SupplierBloc>()
+                                    .add(SupplierRutChanged(rut: rut));
+                              },
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -82,21 +98,14 @@ class SupplierView extends StatelessWidget {
                               decoration: const InputDecoration(
                                   labelText: 'Score (1-10)'),
                               keyboardType: TextInputType.number,
-                              onChanged: (value) {},
+                              onChanged: (score) {
+                                context
+                                    .read<SupplierBloc>()
+                                    .add(SupplierScoreChanged(score: score));
+                              },
                             ),
                           ),
                           const SizedBox(width: 24),
-                          OutlinedButton(
-                            onPressed: () => (),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.orangeAccent,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 15),
-                              textStyle: const TextStyle(fontSize: 18),
-                            ),
-                            child: const Text('Aplicar filtros'),
-                          ),
                         ],
                       ),
                     ],
@@ -118,20 +127,15 @@ class _ListSuppliers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final suppliers =
-        context.select((SupplierBloc bloc) => bloc.state.suppliers);
+        context.select((SupplierBloc bloc) => bloc.state.filteredSuppliers);
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           const SizedBox(height: 30),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Nombre", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("Tipo", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("Score", style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
+          const Text("Resultado",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 30),
           SizedBox(
             height: 300,
@@ -144,7 +148,7 @@ class _ListSuppliers extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: Text(supplier.name),
-                    subtitle: Text('Tipo: ${supplier.type}'),
+                    subtitle: Text('RUT: ${supplier.rut}'),
                     trailing: CircleAvatar(
                       backgroundColor: Colors.orangeAccent,
                       child: Text(supplier.score.toString()),

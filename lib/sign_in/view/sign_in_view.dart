@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/home/view/home_page.dart';
 import 'package:topicos/sign_in/sign_in.dart';
-import 'package:topicos/supplier/view/view.dart';
 
 class SignInView extends StatelessWidget {
   const SignInView({super.key});
@@ -34,27 +34,32 @@ class SignInView extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Row(
-            children: [
-              Container(
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 3),
-                  image: const DecorationImage(
-                      image: AssetImage('lib/assets/deres.png'),
-                      fit: BoxFit.cover,
-                      scale: 2),
+          title: GestureDetector(
+            onTap: () {
+              context.go(HomePage.path);
+            },
+            child: Row(
+              children: [
+                Container(
+                  width: 40.0,
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                    image: const DecorationImage(
+                        image: AssetImage('lib/assets/deres.png'),
+                        fit: BoxFit.cover,
+                        scale: 2),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              const Text(
-                'Registrarse',
-              ),
-            ],
+                const SizedBox(
+                  width: 10,
+                ),
+                const Text(
+                  'Registrarse',
+                ),
+              ],
+            ),
           ),
           centerTitle: false,
           backgroundColor: Colors.orangeAccent,
@@ -62,7 +67,7 @@ class SignInView extends StatelessWidget {
         body: Center(
           child: Container(
             width: 800,
-            height: 300,
+            height: 400,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -191,7 +196,15 @@ class SignInButton extends StatelessWidget {
     final validToSubmit = context.select((SignInBloc bloc) => bloc.valid);
 
     return OutlinedButton(
-      onPressed: () => context.go(SupplierPage.path),
+      onPressed: () {
+        validToSubmit
+            ? () {
+                context
+                    .read<SignInBloc>()
+                    .add(const SignInWithEmailAndPasswordRequested());
+              }
+            : null;
+      },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: Colors.orangeAccent,
@@ -200,15 +213,5 @@ class SignInButton extends StatelessWidget {
       ),
       child: const Text('Registrarse'),
     );
-    // ElevatedButton(
-    //   onPressed: validToSubmit
-    //       ? () {
-    //           context
-    //               .read<SignInBloc>()
-    //               .add(const SignInWithEmailAndPasswordRequested());
-    //         }
-    //       : null,
-    //   child: const Text('Sign in'),
-    // );
   }
 }

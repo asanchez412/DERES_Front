@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 import 'package:topicos/login/login.dart';
-import 'package:topicos/sign_in/sign_in.dart';
+import 'package:topicos/supplier/supplier.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -156,7 +156,7 @@ class LoginButton extends StatelessWidget {
     final validToSubmit = context.select((LoginBloc bloc) => bloc.valid);
 
     return OutlinedButton(
-      onPressed: () => context.go(SignInPage.path),
+      onPressed: () => context.go(SupplierPage.path),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: Colors.orangeAccent,
