@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/company/view/company_page.dart';
 import 'package:topicos/home/view/home_page.dart';
 import 'package:topicos/login/login.dart';
 import 'package:topicos/sign_in/view/sign_in_route.dart';
@@ -28,6 +29,10 @@ final GoRouter _router = GoRouter(
       path: SupplierPage.path,
       pageBuilder: (context, state) => const SupplierPage(),
     ),
+    GoRoute(
+      path: CompanyPage.path,
+      pageBuilder: (context, state) => const CompanyPage(),
+    ),
   ],
 );
 
@@ -38,6 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       theme: ThemeData(
+        fontFamily: 'Montserrat',
         appBarTheme: const AppBarTheme(color: Color(0xFF13B9FF)),
         colorScheme: ColorScheme.fromSwatch(
           accentColor: const Color(0xFF13B9FF),
