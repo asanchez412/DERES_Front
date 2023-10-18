@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 import 'package:topicos/sign_in/sign_in.dart';
+import 'package:topicos/supplier/view/view.dart';
 
 class SignInView extends StatelessWidget {
   const SignInView({super.key});
@@ -32,23 +33,69 @@ class SignInView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Sign in')),
-        body: ListView(
-          padding: const EdgeInsets.all(24),
-          children: const [
-            EmailTextField(),
-            SizedBox(height: 24),
-            PasswordTextField(),
-            SizedBox(height: 24),
-            ConfirmationPasswordTextField(),
-            SizedBox(height: 24),
-            SignInButton(),
-          ],
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                  image: const DecorationImage(
+                      image: AssetImage('lib/assets/deres.png'),
+                      fit: BoxFit.cover,
+                      scale: 2),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              const Text(
+                'Registrarse',
+              ),
+            ],
+          ),
+          centerTitle: false,
+          backgroundColor: Colors.orangeAccent,
+        ),
+        body: Center(
+          child: Container(
+            width: 800,
+            height: 300,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  offset: Offset(0, 2),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                EmailTextField(),
+                SizedBox(height: 16),
+                PasswordTextField(),
+                SizedBox(height: 16),
+                ConfirmationPasswordTextField(),
+                SizedBox(height: 32),
+                SignInButton(),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
+// ... (Los otros widgets no han sido modificados)
 
 class EmailTextField extends StatelessWidget {
   const EmailTextField({super.key});
@@ -143,15 +190,25 @@ class SignInButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final validToSubmit = context.select((SignInBloc bloc) => bloc.valid);
 
-    return ElevatedButton(
-      onPressed: validToSubmit
-          ? () {
-              context
-                  .read<SignInBloc>()
-                  .add(const SignInWithEmailAndPasswordRequested());
-            }
-          : null,
-      child: const Text('Sign in'),
+    return OutlinedButton(
+      onPressed: () => context.go(SupplierPage.path),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.orangeAccent,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        textStyle: const TextStyle(fontSize: 18),
+      ),
+      child: const Text('Registrarse'),
     );
+    // ElevatedButton(
+    //   onPressed: validToSubmit
+    //       ? () {
+    //           context
+    //               .read<SignInBloc>()
+    //               .add(const SignInWithEmailAndPasswordRequested());
+    //         }
+    //       : null,
+    //   child: const Text('Sign in'),
+    // );
   }
 }

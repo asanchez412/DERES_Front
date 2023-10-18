@@ -11,43 +11,90 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Log in')),
-      body: BlocListener<LoginBloc, LoginState>(
-        listenWhen: (previous, current) => previous.status != current.status,
-        listener: (context, state) {
-          if (state.status.isSuccess) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                const SnackBar(content: Text('Log in successful')),
-              );
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              // context.go(HomePage.path);
-            }
-          } else if (state.status.isFailure) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                const SnackBar(content: Text('Something went wrong')),
-              );
-          }
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: const [
-            EmailTextField(),
-            SizedBox(height: 24),
-            PasswordTextField(),
-            SizedBox(height: 24),
-            LoginButton(),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Container(
+              width: 40.0,
+              height: 40.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 3),
+                image: const DecorationImage(
+                    image: AssetImage('lib/assets/deres.png'),
+                    fit: BoxFit.cover,
+                    scale: 2),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            const Text(
+              'Iniciar sesión',
+            ),
           ],
+        ),
+        centerTitle: false,
+        backgroundColor: Colors.orangeAccent,
+      ),
+      body: Center(
+        child: Container(
+          width: 800,
+          height: 300,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                offset: Offset(0, 2),
+                blurRadius: 6,
+              ),
+            ],
+          ),
+          child: BlocListener<LoginBloc, LoginState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status,
+            listener: (context, state) {
+              if (state.status.isSuccess) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    const SnackBar(content: Text('Ingreso exitoso')),
+                  );
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  // context.go(HomePage.path);
+                }
+              } else if (state.status.isFailure) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    const SnackBar(content: Text('Algo salió mal')),
+                  );
+              }
+            },
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                EmailTextField(),
+                SizedBox(height: 16),
+                PasswordTextField(),
+                SizedBox(height: 32),
+                LoginButton(),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
+// ... (Resto de los widgets)
 
 class EmailTextField extends StatelessWidget {
   const EmailTextField({super.key});
@@ -108,18 +155,15 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final validToSubmit = context.select((LoginBloc bloc) => bloc.valid);
 
-    return ElevatedButton(
-      onPressed: () {
-        context.go(SignInPage.path);
-      },
-      // onPressed: validToSubmit
-      //     ? () {
-      //         context
-      //             .read<LoginBloc>()
-      //             .add(const LoginWithEmailAndPasswordRequested());
-      //       }
-      //     : null,
-      child: const Text('Log in'),
+    return OutlinedButton(
+      onPressed: () => context.go(SignInPage.path),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.orangeAccent,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        textStyle: const TextStyle(fontSize: 18),
+      ),
+      child: const Text('Ingresar'),
     );
   }
 }

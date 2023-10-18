@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:topicos/home/view/home_page.dart';
 import 'package:topicos/login/login.dart';
 import 'package:topicos/sign_in/view/sign_in_route.dart';
+import 'package:topicos/supplier/view/view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,10 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: HomePage.path,
       pageBuilder: (context, state) => const HomePage(),
+    ),
+    GoRoute(
+      path: SupplierPage.path,
+      pageBuilder: (context, state) => const SupplierPage(),
     ),
   ],
 );
