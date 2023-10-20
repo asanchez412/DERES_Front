@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/admin/view/admin_edit_poll.dart';
+import 'package:topicos/admin/view/admin_page.dart';
 import 'package:topicos/company/view/company_page.dart';
+import 'package:topicos/company/view/company_poll.dart';
 import 'package:topicos/home/view/home_page.dart';
 import 'package:topicos/login/login.dart';
 import 'package:topicos/sign_in/view/sign_in_route.dart';
@@ -32,6 +35,22 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: CompanyPage.path,
       pageBuilder: (context, state) => const CompanyPage(),
+    ),
+    GoRoute(
+      path: CompanyPollPage.path,
+      pageBuilder: (context, state) {
+        //CompanyBloc bloc = state.extra as CompanyBloc;
+        return const CompanyPollPage();
+        //CompanyPollPage(bloc: bloc);
+      },
+    ),
+    GoRoute(
+      path: AdminPage.path,
+      pageBuilder: (context, state) => const AdminPage(),
+    ),
+    GoRoute(
+      path: AdminPollPage.path,
+      pageBuilder: (context, state) => const AdminPollPage(),
     ),
   ],
 );

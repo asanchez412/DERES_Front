@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:topicos/admin/view/admin_edit_poll.dart';
 import 'package:topicos/home/view/home_page.dart';
 
-class CompanyView extends StatelessWidget {
-  const CompanyView({super.key});
+class AdminView extends StatelessWidget {
+  const AdminView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +16,12 @@ class CompanyView extends StatelessWidget {
           },
           child: Row(
             children: [
+              const Text(
+                'Administrador',
+              ),
+              const SizedBox(
+                width: 10,
+              ),
               Container(
                 width: 40.0,
                 height: 40.0,
@@ -27,12 +33,6 @@ class CompanyView extends StatelessWidget {
                       fit: BoxFit.cover,
                       scale: 2),
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              const Text(
-                'Proveedor',
               ),
             ],
           ),
@@ -70,7 +70,7 @@ class CompanyView extends StatelessWidget {
                         height: 40,
                       ),
                       const Text(
-                        '¡Somos una Red de Empresas por el Desarrollo Sostenible!',
+                        'Aquí puede editar la encuesta para los proveedores',
                         style: TextStyle(fontSize: 15),
                       ),
                       const SizedBox(
@@ -78,10 +78,10 @@ class CompanyView extends StatelessWidget {
                       ),
                       OutlinedButton(
                         onPressed: () => {
-                          context.go(AdminPollPage.path
-                              // CompanyPollPage.path,
-                              //extra: context.read<CompanyBloc>()
-                              )
+                          context.go(
+                            AdminPollPage.path,
+                            //extra: context.read<CompanyBloc>()
+                          )
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -90,7 +90,7 @@ class CompanyView extends StatelessWidget {
                               horizontal: 20, vertical: 15),
                           textStyle: const TextStyle(fontSize: 18),
                         ),
-                        child: const Text('Realizar Encuesta'),
+                        child: const Text('Editar Encuesta'),
                       ),
                     ],
                   ),
