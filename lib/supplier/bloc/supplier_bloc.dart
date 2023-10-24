@@ -1,6 +1,9 @@
 import 'dart:async';
-
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
+import 'package:http/http.dart' as http;
+import 'package:topicos/extensions/api.dart';
 import 'package:topicos/supplier/bloc/supplier_event.dart';
 import 'package:topicos/supplier/bloc/supplier_state.dart';
 import 'package:topicos/supplier/models/supplier_model.dart';
@@ -14,6 +17,23 @@ class SupplierBloc extends Bloc<SupplierEvent, SupplierState> {
   }
 
   FutureOr<void> _onSupplierRequested(
+      /*
+      SupplierRequested event, Emitter<SupplierState> emit) async {
+    try {
+      var client = http.Client();
+      var data = await client.fetchData(
+        url: 'http://localhost:8080/providers',
+      );
+
+        final parsed = json.decode(data.values.toString());
+        final list = parsed.map<Supplier>((data) => Supplier.fromJson(data)).toList();
+
+        emit(state.copyWith(suppliers:list));
+
+    } on Exception {
+      //emit(state.copyWith(status: FormzSubmissionStatus.failure));
+    }
+  */
       SupplierRequested event, Emitter<SupplierState> emit) {
     final List<Supplier> suppliers = [
       Supplier(name: "Proveedor A", score: '5', type: "Tipo 1", rut: '12443'),
@@ -21,7 +41,7 @@ class SupplierBloc extends Bloc<SupplierEvent, SupplierState> {
       Supplier(name: "Proveedor C", score: '3', type: "Tipo 3", rut: '12123'),
     ];
 
-    emit(state.copyWith(suppliers: suppliers));
+    
   }
 
   FutureOr<void> _onSupplierNameChanged(
