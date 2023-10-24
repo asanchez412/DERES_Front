@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:topicos/admin/view/admin_edit_poll.dart';
+import 'package:topicos/company/view/company_poll.dart';
 import 'package:topicos/home/view/home_page.dart';
 
 class CompanyView extends StatelessWidget {
@@ -78,10 +78,10 @@ class CompanyView extends StatelessWidget {
                       ),
                       OutlinedButton(
                         onPressed: () => {
-                          context.go(AdminPollPage.path
-                              // CompanyPollPage.path,
-                              //extra: context.read<CompanyBloc>()
-                              )
+                          context.go(
+                            CompanyPollPage.path,
+                            //extra: context.read<CompanyBloc>()
+                          )
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,

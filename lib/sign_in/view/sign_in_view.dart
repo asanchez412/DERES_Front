@@ -80,17 +80,44 @@ class SignInView extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+            child: Column(
               children: [
-                EmailTextField(),
-                SizedBox(height: 16),
-                PasswordTextField(),
-                SizedBox(height: 16),
-                ConfirmationPasswordTextField(),
-                SizedBox(height: 32),
-                SignInButton(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const EmailTextField(),
+                    const SizedBox(height: 16),
+                    const PasswordTextField(),
+                    const SizedBox(height: 16),
+                    const ConfirmationPasswordTextField(),
+                    const SizedBox(height: 32),
+                    const Text(
+                      "Tipo de Usuario",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CheckboxListTile(
+                              title: const Text("Usuario"),
+                              value: false,
+                              onChanged: ((value) {})),
+                        ),
+                        const SizedBox(width: 32),
+                        Expanded(
+                          child: CheckboxListTile(
+                              title: const Text("Proveedor"),
+                              value: false,
+                              onChanged: ((value) {})),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+                const SignInButton(),
               ],
             ),
           ),
@@ -99,8 +126,6 @@ class SignInView extends StatelessWidget {
     );
   }
 }
-
-// ... (Los otros widgets no han sido modificados)
 
 class EmailTextField extends StatelessWidget {
   const EmailTextField({super.key});

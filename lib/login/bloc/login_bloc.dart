@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:topicos/extensions/api.dart';
 import 'package:topicos/form_inputs/lib/form_inputs.dart';
 
 part 'login_event.dart';
@@ -28,10 +30,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
-      // await _authenticationClient.logInWithEmailAndPassword(
-      //   email: state.email.value,
-      //   password: state.password.value,
-      // );
+      var client = http.Client();
+      var data = await client.fetchData(
+        url: 'http://localhost:8080/users/login',
+        headers: {
+          "user_name": state.email.value,
+          "password": state.password.value
+        },
+      );
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } on Exception {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));

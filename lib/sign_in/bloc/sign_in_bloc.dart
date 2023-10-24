@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:topicos/extensions/api.dart';
+import 'package:topicos/extensions/privilege.dart';
 import 'package:topicos/form_inputs/lib/form_inputs.dart';
 
 part 'sign_in_event.dart';
@@ -51,10 +54,15 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   ) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
-      // await _authenticationClient.registerWithEmailAndPassword(
-      //   email: state.email.value,
-      //   password: state.password.value,
-      // );
+      var client = http.Client();
+      var data = await client.fetchData(
+        url: 'http://localhost:8080/users/signup',
+        headers: {
+          "user_name": state.email.value,
+          "password": state.password.value,
+          "privilege": Privilege.superuser.name,
+        },
+      );
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } on Exception {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
