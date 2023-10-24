@@ -253,15 +253,16 @@ class _Checkbox extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(question),
         ),
-        DropdownButton<int>(
-          value: 10,
-          items: List.generate(11, (index) => index * 10).map((int value) {
-            return DropdownMenuItem<int>(
-              value: value,
-              child: Text('$value'),
-            );
-          }).toList(),
-          onChanged: (int? newValue) {},
+        SizedBox(
+          width: 130,
+          child: TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Ponderación',
+            ),
+            onChanged: (value) => (),
+            validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+            keyboardType: TextInputType.number,
+          ),
         ),
       ],
     );
