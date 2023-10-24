@@ -20,6 +20,7 @@ class SupplierBloc extends Bloc<SupplierEvent, SupplierState> {
       Supplier(name: "Proveedor B", score: '8', type: "Tipo 2", rut: '12243'),
       Supplier(name: "Proveedor C", score: '3', type: "Tipo 3", rut: '12123'),
     ];
+
     emit(state.copyWith(suppliers: suppliers));
   }
 
