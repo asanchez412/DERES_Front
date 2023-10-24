@@ -23,6 +23,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     on<SignInWithEmailAndPasswordRequested>(
       _onSignInWithEmailAndPasswordRequested,
     );
+    on<SignInPrivilageChanged>(_onSignInPrivilageChanged);
   }
 
   //final AuthenticationClient _authenticationClient;
@@ -60,9 +61,22 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         headers: {
           "user_name": state.email.value,
           "password": state.password.value,
-          "privilege": Privilege.superuser.name,
+          "privilege": state.privilege.name,
         },
       );
+      if (data.containsKey('privilage')) {
+        String privilage = data['privilage'];
+        if (privilage == 'admin') {
+          emit(state.copyWith(privilege: Privilege.admin));
+        } else if (privilage == 'user') {
+          emit(state.copyWith(privilege: Privilege.user));
+        } else if (privilage == 'provider') {
+          emit(state.copyWith(privilege: Privilege.provider));
+        } else {
+          emit(state.copyWith(privilege: Privilege.all));
+        }
+      }
+
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } on Exception {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
@@ -95,5 +109,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     Emitter<SignInState> emit,
   ) {
     emit(state.copyWith(confirmationPassword: event.password));
+  }
+
+  FutureOr<void> _onSignInPrivilageChanged(
+      SignInPrivilageChanged event, Emitter<SignInState> emit) {
+    emit((state.copyWith(privilege: event.privilage)));
   }
 }

@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:topicos/extensions/api.dart';
+import 'package:topicos/extensions/privilege.dart';
 import 'package:topicos/form_inputs/lib/form_inputs.dart';
 
 part 'login_event.dart';
@@ -38,6 +39,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           "password": state.password.value
         },
       );
+      if (data.containsKey('privilage')) {
+        String privilage = data['privilage'];
+        if (privilage == 'admin') {
+          emit(state.copyWith(privilege: Privilege.admin));
+        } else if (privilage == 'user') {
+          emit(state.copyWith(privilege: Privilege.user));
+        } else if (privilage == 'provider') {
+          emit(state.copyWith(privilege: Privilege.provider));
+        } else {
+          emit(state.copyWith(privilege: Privilege.all));
+        }
+      }
+
       emit(state.copyWith(status: FormzSubmissionStatus.success));
     } on Exception {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));

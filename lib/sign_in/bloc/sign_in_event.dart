@@ -47,3 +47,12 @@ class SignInPasswordVisibilityChanged extends SignInEvent {
   @override
   List<Object?> get props => [obscure];
 }
+
+class SignInPrivilageChanged extends SignInEvent {
+  const SignInPrivilageChanged({required this.privilage});
+
+  final Privilege privilage;
+
+  @override
+  List<Object?> get props => [privilage];
+}

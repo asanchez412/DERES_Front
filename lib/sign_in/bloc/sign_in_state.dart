@@ -7,6 +7,7 @@ class SignInState extends Equatable {
     required this.password,
     required this.confirmationPassword,
     required this.obscurePasswords,
+    required this.privilege,
   });
 
   const SignInState.initial()
@@ -15,14 +16,15 @@ class SignInState extends Equatable {
           email: const Email.pure(),
           password: const Password.pure(),
           confirmationPassword: '',
+          privilege: Privilege.undefined,
           obscurePasswords: true,
         );
-
   final FormzSubmissionStatus status;
   final Email email;
   final Password password;
   final String confirmationPassword;
   final bool obscurePasswords;
+  final Privilege privilege;
 
   SignInState copyWith({
     FormzSubmissionStatus? status,
@@ -30,6 +32,7 @@ class SignInState extends Equatable {
     Password? password,
     String? confirmationPassword,
     bool? obscurePasswords,
+    Privilege? privilege,
   }) {
     return SignInState(
       status: status ?? this.status,
@@ -37,6 +40,7 @@ class SignInState extends Equatable {
       email: email ?? this.email,
       obscurePasswords: obscurePasswords ?? this.obscurePasswords,
       password: password ?? this.password,
+      privilege: privilege ?? this.privilege,
     );
   }
 
@@ -47,5 +51,6 @@ class SignInState extends Equatable {
         password,
         confirmationPassword,
         obscurePasswords,
+        privilege,
       ];
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/admin/view/admin_page.dart';
 import 'package:topicos/login/view/view.dart';
-import 'package:topicos/sign_in/view/sign_in_route.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -71,7 +71,9 @@ class HomeView extends StatelessWidget {
                     ),
                     const SizedBox(width: 20),
                     OutlinedButton(
-                      onPressed: () => context.go(SignInPage.path),
+                      onPressed: () => context.go(
+                        AdminPage.path,
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white),
