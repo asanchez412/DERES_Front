@@ -10,4 +10,14 @@ class Supplier {
     required this.type,
     required this.rut,
   });
+
+  factory Supplier.fromJson(Map<String, dynamic> json) {
+    return Supplier(
+      name: json['name'],
+      score: json['score'],
+      type: json['type'],
+      rut: json['rut'],
+    );
+  }
+
 }
