@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/admin/bloc/admin_bloc.dart';
+import 'package:topicos/admin/bloc/admin_event.dart';
 import 'package:topicos/admin/bloc/admin_state.dart';
+import 'package:topicos/admin/model/question.dart';
 import 'package:topicos/home/view/home_page.dart';
 
 class AdminPollPage extends Page<void> {
   const AdminPollPage({
     super.key,
-    //required this.bloc
   });
 
   static const path = '/admin-poll';
-  //final CompanyBloc bloc;
 
   @override
   Route<void> createRoute(BuildContext context) {
@@ -19,10 +21,6 @@ class AdminPollPage extends Page<void> {
       settings: this,
       builder: (context) {
         return const AdminPollView();
-        // BlocProvider.value(
-        //   value: bloc,
-        //   child: const CompanyPollView(),
-        // );
       },
     );
   }
@@ -69,15 +67,50 @@ class AdminPollView extends StatelessWidget {
         child: Column(
           children: [
             _EditQuestions(),
-            SizedBox(height: 40),
-            _Environmental(),
-            _Social(),
-            _Governance(),
-            _ButtonSend(),
-            SizedBox(height: 40),
+            _ContentPoll(),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ContentPoll extends StatelessWidget {
+  const _ContentPoll();
+
+  @override
+  Widget build(BuildContext context) {
+    final poll = context.select((AdminBloc bloc) => bloc.state.poll);
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height - 20,
+          child: ListView.builder(
+              itemCount: poll.length,
+              shrinkWrap: false,
+              itemBuilder: (context, index) {
+                switch (poll[index].questionType) {
+                  case QuestionType.environmental:
+                    return _Environmental(
+                      questions: poll[index].questions,
+                    );
+                  case QuestionType.governance:
+                    return _Governance(
+                      questions: poll[index].questions,
+                    );
+                  case QuestionType.social:
+                    return _Social(
+                      questions: poll[index].questions,
+                    );
+                  default:
+                }
+                return null;
+              }),
+        ),
+        const SizedBox(height: 40),
+        const _ButtonSend(),
+        const SizedBox(height: 40),
+      ],
     );
   }
 }
@@ -88,7 +121,9 @@ class _ButtonSend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () => (),
+      onPressed: () {
+        context.read<AdminBloc>().add(const AdminQuestionSubmitted());
+      },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: Colors.orangeAccent,
@@ -101,10 +136,13 @@ class _ButtonSend extends StatelessWidget {
 }
 
 class _Governance extends StatelessWidget {
-  const _Governance();
+  const _Governance({required this.questions});
 
+  final List<Question> questions;
   @override
   Widget build(BuildContext context) {
+    final ponderation =
+        context.select((AdminBloc bloc) => bloc.state.calculatePonderation());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -115,41 +153,47 @@ class _Governance extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        _Checkbox(
-          question:
-              '¿Tiene un código de conducta ética que deben seguir todos los empleados y directivos?',
-          onChanged: () {},
+        ListView.builder(
+          itemCount: questions.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return _Checkbox(
+              question: questions[index],
+              onChanged: () {},
+            );
+          },
         ),
-        _Checkbox(
-          question:
-              '¿Publica informes financieros de manera regular y transparente?',
-          onChanged: () {},
+        const SizedBox(
+          height: 20,
         ),
-        _Checkbox(
-          question:
-              '¿Tiene políticas y medidas en vigor para prevenir la corrupción y el soborno?',
-          onChanged: () {},
+        const Divider(
+          color: Colors.orange,
         ),
-        _Checkbox(
-          question:
-              '¿Desarrolla proyectos o iniciativas de responsabilidad social corporativa?',
-          onChanged: () {},
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Text(
+              '${'Ponderación: ${ponderation[questions.first.type]}'} / 100',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
         ),
-        _Checkbox(
-          question: '¿Realiza su logística en vehículos eléctricos?',
-          onChanged: () {},
-        ),
-        const SizedBox(height: 20),
       ],
     );
   }
 }
 
 class _Social extends StatelessWidget {
-  const _Social();
+  const _Social({
+    required this.questions,
+  });
 
+  final List<Question> questions;
   @override
   Widget build(BuildContext context) {
+    final ponderation =
+        context.select((AdminBloc bloc) => bloc.state.calculatePonderation());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -160,35 +204,30 @@ class _Social extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        _Checkbox(
-          question: '¿Tiene políticas de diversidad e inclusión?',
-          onChanged: () {},
+        ListView.builder(
+          itemCount: questions.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return _Checkbox(
+              question: questions[index],
+              onChanged: () {},
+            );
+          },
         ),
-        _Checkbox(
-          question:
-              '¿Ofrece programas de salud y bienestar para sus empleados?',
-          onChanged: () {},
+        const SizedBox(
+          height: 20,
         ),
-        _Checkbox(
-          question:
-              '¿Proporciona oportunidades regulares de formación y desarrollo para sus empleados?',
-          onChanged: () {},
+        const Divider(
+          color: Colors.orange,
         ),
-        _Checkbox(
-          question:
-              '¿Se compromete a pagar salarios justos y equitativos a sus empleados?',
-          onChanged: () {},
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 2,
-          child: TextFormField(
-            decoration: const InputDecoration(
-              labelText:
-                  '¿Cuántos funcionarios transgénero tiene en su plantilla?',
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Text(
+              '${'Ponderación: ${ponderation[questions.first.type]}'} / 100',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
-            onChanged: (value) => (),
-            validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-            keyboardType: TextInputType.number,
           ),
         ),
       ],
@@ -197,10 +236,15 @@ class _Social extends StatelessWidget {
 }
 
 class _Environmental extends StatelessWidget {
-  const _Environmental();
+  const _Environmental({
+    required this.questions,
+  });
 
+  final List<Question> questions;
   @override
   Widget build(BuildContext context) {
+    final ponderation =
+        context.select((AdminBloc bloc) => bloc.state.calculatePonderation());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -211,26 +255,31 @@ class _Environmental extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        _Checkbox(
-          question: '¿Recicla en su proceso productivo?',
-          onChanged: () {},
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: questions.length,
+          itemBuilder: (context, index) {
+            return _Checkbox(
+              question: questions[index],
+              onChanged: () {},
+            );
+          },
         ),
-        _Checkbox(
-          question: '¿Realiza su logística en vehículos eléctricos?',
-          onChanged: () {},
+        const SizedBox(
+          height: 20,
         ),
-        _Checkbox(
-          question: '¿Utiliza fuentes de energía renovable en su operación?',
-          onChanged: () {},
+        const Divider(
+          color: Colors.orange,
         ),
-        _Checkbox(
-          question: '¿Tiene un programa para reducir y gestionar residuos?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Implementa prácticas de conservación de agua en sus operaciones?',
-          onChanged: () {},
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Text(
+              '${'Ponderación: ${ponderation[questions.first.type]}'} / 100',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
         ),
       ],
     );
@@ -243,7 +292,7 @@ class _Checkbox extends StatelessWidget {
     required this.onChanged,
   });
 
-  final String question;
+  final Question question;
   final VoidCallback onChanged;
   @override
   Widget build(BuildContext context) {
@@ -251,11 +300,12 @@ class _Checkbox extends StatelessWidget {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(question),
+          child: Text(question.questionText),
         ),
         SizedBox(
           width: 130,
           child: TextFormField(
+            initialValue: question.ponderation,
             decoration: const InputDecoration(
               labelText: 'Ponderación',
             ),
@@ -264,6 +314,15 @@ class _Checkbox extends StatelessWidget {
             keyboardType: TextInputType.number,
           ),
         ),
+        GestureDetector(
+            onTap: () {
+              context.read<AdminBloc>().add(AdminEditQuestion(
+                  questionId: question.id, ponderation: question.ponderation));
+            },
+            child: const Icon(
+              Icons.edit,
+              size: 20,
+            ))
       ],
     );
   }
@@ -274,70 +333,92 @@ class _EditQuestions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
-            child: Text(
-              'Agregar Preguntas',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
+              child: Text(
+                'Agregar Preguntas',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
             ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration:
-                        const InputDecoration(labelText: 'Nueva Pregunta'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextFormField(
+                      decoration:
+                          const InputDecoration(labelText: 'Nueva Pregunta'),
+                      onChanged: (value) => (context
+                          .read<AdminBloc>()
+                          .add(AdminQuestionChanged(question: value))),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Campo obligatorio' : null,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                width: 50,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: DropdownButton<QuestionType>(
-                  value: QuestionType.environmental,
-                  items: QuestionType.values.map((value) {
-                    return DropdownMenuItem<QuestionType>(
-                      value: value,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(value.name),
-                      ), // Usando la extensión para obtener el nombre del enum
-                    );
-                  }).toList(),
-                  onChanged: (QuestionType? newValue) {},
+                const SizedBox(
+                  width: 50,
                 ),
-              ),
-              const SizedBox(
-                width: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: GestureDetector(
-                  onTap: () {},
-                  child: const Icon(Icons.add),
+                const _DropDownQuestionType(),
+                const SizedBox(
+                  width: 30,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-        ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: GestureDetector(
+                    onTap: () {
+                      context.read<AdminBloc>().add(const AdminQuestionAdd());
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DropDownQuestionType extends StatelessWidget {
+  const _DropDownQuestionType();
+
+  @override
+  Widget build(BuildContext context) {
+    final questionType =
+        context.select((AdminBloc bloc) => bloc.state.questionType);
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: DropdownButton<QuestionType>(
+        value: questionType,
+        items: QuestionType.values.map((value) {
+          return DropdownMenuItem<QuestionType>(
+            value: value,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(value.name),
+            ),
+          );
+        }).toList(),
+        onChanged: (QuestionType? newValue) {
+          context
+              .read<AdminBloc>()
+              .add(AdminQuestionTypeChanged(questionType: newValue!));
+        },
       ),
     );
   }

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:topicos/admin/bloc/admin_bloc.dart';
 import 'package:topicos/admin/view/admin_view.dart';
 
 class AdminPage extends Page<void> {
@@ -14,12 +12,7 @@ class AdminPage extends Page<void> {
       fullscreenDialog: true,
       settings: this,
       builder: (context) {
-        return BlocProvider<AdminBloc>(
-          create: (_) {
-            return AdminBloc();
-          },
-          child: const AdminView(),
-        );
+        return const AdminView();
       },
     );
   }

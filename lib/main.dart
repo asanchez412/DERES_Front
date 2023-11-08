@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/admin/bloc/admin_bloc.dart';
+import 'package:topicos/admin/bloc/admin_event.dart';
 import 'package:topicos/admin/view/admin_edit_poll.dart';
 import 'package:topicos/admin/view/admin_page.dart';
 import 'package:topicos/company/view/company_page.dart';
@@ -44,14 +47,26 @@ final GoRouter _router = GoRouter(
         //CompanyPollPage(bloc: bloc);
       },
     ),
-    GoRoute(
-      path: AdminPage.path,
-      pageBuilder: (context, state) => const AdminPage(),
-    ),
-    GoRoute(
-      path: AdminPollPage.path,
-      pageBuilder: (context, state) => const AdminPollPage(),
-    ),
+    ShellRoute(
+      builder: (context, state, child) {
+        return BlocProvider<AdminBloc>(
+          create: (ctx) => AdminBloc()..add(const AdminQuestionRequested()),
+          child: child,
+        );
+      },
+      routes: [
+        GoRoute(
+          path: AdminPage.path,
+          name: AdminPage.path,
+          pageBuilder: (context, state) => const AdminPage(),
+        ),
+        GoRoute(
+          path: AdminPollPage.path,
+          name: AdminPollPage.path,
+          pageBuilder: (context, state) => const AdminPollPage(),
+        ),
+      ],
+    )
   ],
 );
 

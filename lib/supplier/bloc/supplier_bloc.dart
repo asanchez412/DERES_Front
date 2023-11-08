@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formz/formz.dart';
-import 'package:http/http.dart' as http;
-import 'package:topicos/extensions/api.dart';
 import 'package:topicos/supplier/bloc/supplier_event.dart';
 import 'package:topicos/supplier/bloc/supplier_state.dart';
 import 'package:topicos/supplier/models/supplier_model.dart';
@@ -34,14 +31,14 @@ class SupplierBloc extends Bloc<SupplierEvent, SupplierState> {
       //emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
   */
-      SupplierRequested event, Emitter<SupplierState> emit) {
+      SupplierRequested event,
+      Emitter<SupplierState> emit) {
     final List<Supplier> suppliers = [
       Supplier(name: "Proveedor A", score: '5', type: "Tipo 1", rut: '12443'),
       Supplier(name: "Proveedor B", score: '8', type: "Tipo 2", rut: '12243'),
       Supplier(name: "Proveedor C", score: '3', type: "Tipo 3", rut: '12123'),
     ];
-
-    
+    emit(state.copyWith(suppliers: suppliers));
   }
 
   FutureOr<void> _onSupplierNameChanged(
