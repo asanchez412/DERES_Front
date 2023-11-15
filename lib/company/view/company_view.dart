@@ -43,35 +43,123 @@ class CompanyView extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              child: Text(
+                'Bienvenido a Nuestra Web',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width / 2,
                   height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    border: Border.all(color: Colors.white, width: 3),
-                    image: const DecorationImage(
-                        image: AssetImage('lib/assets/company_page.png'),
-                        fit: BoxFit.fitHeight,
-                        scale: 2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Datos de la Empresa ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(labelText: 'Nombre'),
+                          onChanged: (value) => (),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo obligatorio' : null,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(labelText: 'Razón Social'),
+                          onChanged: (value) => (),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo obligatorio' : null,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(labelText: 'Dirección'),
+                          onChanged: (value) => (),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo obligatorio' : null,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(labelText: 'Teléfono'),
+                          onChanged: (value) => (),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo obligatorio' : null,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              labelText: 'Email de Contacto'),
+                          onChanged: (value) => (),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo obligatorio' : null,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              labelText: 'Persona de Contacto'),
+                          onChanged: (value) => (),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Campo obligatorio' : null,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      const Divider(
+                        height: 2,
+                        color: Colors.orange,
+                      ),
+                      const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        child: Text(
+                          'Puntaje Total',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                      const CircleAvatar(
+                        backgroundColor: Colors.orange,
+                        radius: 35,
+                        child: Text(
+                          '20',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
                   child: Column(
                     children: [
                       const Text(
-                        'Bienvenido a Nuestra Web',
-                        style: TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      const Text(
-                        '¡Somos una Red de Empresas por el Desarrollo Sostenible!',
-                        style: TextStyle(fontSize: 15),
+                        '¿Quiere realizar la encuesta?',
+                        style: TextStyle(fontSize: 20),
                       ),
                       const SizedBox(
                         height: 30,
@@ -90,7 +178,7 @@ class CompanyView extends StatelessWidget {
                               horizontal: 20, vertical: 15),
                           textStyle: const TextStyle(fontSize: 18),
                         ),
-                        child: const Text('Realizar Encuesta'),
+                        child: const Text('Comenzar'),
                       ),
                     ],
                   ),

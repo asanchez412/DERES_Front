@@ -2,7 +2,7 @@ import 'package:topicos/admin/bloc/admin_state.dart';
 import 'package:topicos/admin/model/question.dart';
 
 class Poll {
-  final List<Question> questions;
+  List<Question> questions;
   final QuestionType questionType;
 
   Poll({required this.questions, required this.questionType});

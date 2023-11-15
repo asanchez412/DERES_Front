@@ -49,16 +49,14 @@ class AdminQuestionRequested extends AdminEvent {
 }
 
 class AdminEditQuestion extends AdminEvent {
-  const AdminEditQuestion({
-    required this.questionId,
-    required this.ponderation,
-  });
+  const AdminEditQuestion(
+      {required this.questionId,
+      required this.ponderation,
+      required this.questionType});
   final String questionId;
   final String ponderation;
+  final QuestionType questionType;
 
   @override
-  List<Object?> get props => [
-        questionId,
-        ponderation,
-      ];
+  List<Object?> get props => [questionId, ponderation, questionId];
 }

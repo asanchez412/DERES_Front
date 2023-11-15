@@ -81,6 +81,7 @@ class _ContentPoll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final poll = context.select((AdminBloc bloc) => bloc.state.poll);
+
     return Column(
       children: [
         SizedBox(
@@ -174,7 +175,7 @@ class _Governance extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Text(
-              '${'Ponderación: ${ponderation[questions.first.type]}'} / 100',
+              '${'Ponderación: ${ponderation![questions.first.type]}'} / 100',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
@@ -225,7 +226,7 @@ class _Social extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Text(
-              '${'Ponderación: ${ponderation[questions.first.type]}'} / 100',
+              '${'Ponderación: ${ponderation![questions.first.type]}'} / 100',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
@@ -276,7 +277,7 @@ class _Environmental extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Text(
-              '${'Ponderación: ${ponderation[questions.first.type]}'} / 100',
+              '${'Ponderación: ${ponderation![questions.first.type]}'} / 100',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
@@ -286,43 +287,67 @@ class _Environmental extends StatelessWidget {
   }
 }
 
-class _Checkbox extends StatelessWidget {
-  const _Checkbox({
-    required this.question,
-    required this.onChanged,
-  });
-
+class _Checkbox extends StatefulWidget {
   final Question question;
   final VoidCallback onChanged;
+
+  const _Checkbox({
+    Key? key,
+    required this.question,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  _CheckboxState createState() => _CheckboxState();
+}
+
+class _CheckboxState extends State<_Checkbox> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.question.ponderation);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(question.questionText),
+          child: Text(widget.question.questionText),
         ),
         SizedBox(
           width: 130,
           child: TextFormField(
-            initialValue: question.ponderation,
+            controller: _controller,
             decoration: const InputDecoration(
               labelText: 'Ponderación',
             ),
-            onChanged: (value) => (),
+            onChanged: (value) => widget.onChanged(),
             validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             keyboardType: TextInputType.number,
           ),
         ),
         GestureDetector(
-            onTap: () {
-              context.read<AdminBloc>().add(AdminEditQuestion(
-                  questionId: question.id, ponderation: question.ponderation));
-            },
-            child: const Icon(
-              Icons.edit,
-              size: 20,
-            ))
+          onTap: () {
+            context.read<AdminBloc>().add(AdminEditQuestion(
+                questionId: widget.question.id,
+                ponderation: _controller.text,
+                questionType: widget.question.type));
+          },
+          child: const Icon(
+            Icons.edit,
+            size: 20,
+          ),
+        ),
       ],
     );
   }

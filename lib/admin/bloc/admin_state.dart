@@ -74,7 +74,7 @@ class AdminState extends Equatable {
         poll,
       ];
 
-  Map<QuestionType, int> calculatePonderation() {
+  Map<QuestionType, int>? calculatePonderation() {
     Map<QuestionType, int> typePonderationSum = {
       QuestionType.environmental: 0,
       QuestionType.social: 0,
@@ -84,13 +84,17 @@ class AdminState extends Equatable {
     for (var poll in poll) {
       for (var question in poll.questions) {
         int currentPonderation = int.tryParse(question.ponderation) ?? 0;
-        typePonderationSum[question.type] =
-            (typePonderationSum[question.type] ?? 0) + currentPonderation;
+        int existingPonderation = typePonderationSum[question.type] ?? 0;
 
-        if (typePonderationSum[question.type]! > 100) {
-          throw Exception(
-              'La suma de la ponderación para ${question.type} excede el total permitido de 100.');
+        // Verificar si sumar la nueva ponderación excedería el límite de 100
+        if (existingPonderation + currentPonderation > 100) {
+          // Si se excede el límite, no sumar la nueva ponderación
+          continue;
         }
+
+        // Sumar la nueva ponderación
+        typePonderationSum[question.type] =
+            existingPonderation + currentPonderation;
       }
     }
     return typePonderationSum;

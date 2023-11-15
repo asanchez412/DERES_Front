@@ -51,11 +51,22 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         type: state.questionType,
         ponderation: '0',
         id: '0');
-    final newQuestions = [...state.questions, newQuestion];
-    final poll = state.questions.forEach((element) {
-      if (element.type == newQuestion.type) {}
-    });
-    emit(state.copyWith(questions: newQuestions));
+
+    List<Poll> updatedPolls = [];
+    for (var poll in state.poll) {
+      if (poll.questionType == state.questionType) {
+        List<Question> newQuestions = List.from(poll.questions)
+          ..add(newQuestion);
+
+        Poll updatedPoll =
+            Poll(questions: newQuestions, questionType: poll.questionType);
+        updatedPolls.add(updatedPoll);
+      } else {
+        updatedPolls.add(poll);
+      }
+    }
+
+    emit(state.copyWith(poll: updatedPolls));
   }
 
   FutureOr<void> _onAdminQuestionRequested(
@@ -69,7 +80,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       // final listOfQuestions =
       //     mapQuestions.map((e) => Question.fromJson(e)).toList();
       final poll = _getQuestions();
-      print('aca');
+
       emit(state.copyWith(poll: poll));
 
       emit(state.copyWith(status: AdminStatus.success));
@@ -80,15 +91,31 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
   FutureOr<void> _onAdminEditQuestion(
       AdminEditQuestion event, Emitter<AdminState> emit) {
-    for (var poll in state.poll) {
-      for (var question in poll.questions) {
-        if (question.id == event.questionId) {
-          question.ponderation = event.ponderation;
-          break;
+    List<Poll> updatedPolls = state.poll.map((poll) {
+      List<Question> updatedQuestions = poll.questions.map((question) {
+        final ponderation = state.calculatePonderation();
+        if (ponderation![event.questionType]! + int.parse(event.ponderation) <=
+            100) {
+          if (question.id == event.questionId) {
+            return Question(
+              questionText: question.questionText,
+              type: question.type,
+              ponderation: event.ponderation,
+              id: question.id,
+            );
+          }
         }
-      }
-    }
-    emit(state.copyWith(poll: state.poll));
+
+        return question;
+      }).toList();
+
+      return Poll(
+        questions: updatedQuestions,
+        questionType: poll.questionType,
+      );
+    }).toList();
+
+    emit(state.copyWith(poll: updatedPolls));
   }
 }
 

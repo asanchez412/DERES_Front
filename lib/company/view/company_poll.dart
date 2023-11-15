@@ -67,8 +67,13 @@ class CompanyPollView extends StatelessWidget {
       body: const SingleChildScrollView(
         child: Column(
           children: [
-            _PersonalForm(),
-            SizedBox(height: 40),
+            Padding(
+              padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
+              child: Text(
+                'Encuesta para Proveedores ',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
             _Environmental(),
             _Social(),
             _Governance(),
