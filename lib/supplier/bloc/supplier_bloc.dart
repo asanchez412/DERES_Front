@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:topicos/supplier/bloc/supplier_event.dart';
 import 'package:topicos/supplier/bloc/supplier_state.dart';
 import 'package:topicos/supplier/models/supplier_model.dart';
@@ -14,31 +16,16 @@ class SupplierBloc extends Bloc<SupplierEvent, SupplierState> {
   }
 
   FutureOr<void> _onSupplierRequested(
-      /*
       SupplierRequested event, Emitter<SupplierState> emit) async {
     try {
-      var client = http.Client();
-      var data = await client.fetchData(
-        url: 'http://localhost:8080/providers',
-      );
-
-        final parsed = json.decode(data.values.toString());
-        final list = parsed.map<Supplier>((data) => Supplier.fromJson(data)).toList();
-
-        emit(state.copyWith(suppliers:list));
-
-    } on Exception {
-      //emit(state.copyWith(status: FormzSubmissionStatus.failure));
+      emit(state.copyWith(status: SupplierStatus.loading));
+      List<Supplier> suppliers = await fetchSuppliers();
+      emit(
+          state.copyWith(suppliers: suppliers, status: SupplierStatus.success));
+    } catch (e) {
+      print(e);
+      emit(state.copyWith(status: SupplierStatus.failure));
     }
-  */
-      SupplierRequested event,
-      Emitter<SupplierState> emit) {
-    final List<Supplier> suppliers = [
-      Supplier(name: "Proveedor A", score: '5', type: "Tipo 1", rut: '12443'),
-      Supplier(name: "Proveedor B", score: '8', type: "Tipo 2", rut: '12243'),
-      Supplier(name: "Proveedor C", score: '3', type: "Tipo 3", rut: '12123'),
-    ];
-    emit(state.copyWith(suppliers: suppliers));
   }
 
   FutureOr<void> _onSupplierNameChanged(
@@ -54,5 +41,21 @@ class SupplierBloc extends Bloc<SupplierEvent, SupplierState> {
   FutureOr<void> _onSupplierScoreChanged(
       SupplierScoreChanged event, Emitter<SupplierState> emit) {
     emit(state.copyWith(score: event.score));
+  }
+
+  Future<List<Supplier>> fetchSuppliers() async {
+    final response =
+        await http.get(Uri.parse('http://172.178.74.246:8080/providers'));
+
+    if (response.statusCode == 202) {
+      List<dynamic> jsonResponse = jsonDecode(
+        response.body,
+      );
+      List<Supplier> suppliers =
+          jsonResponse.map((data) => Supplier.fromJson(data)).toList();
+      return suppliers;
+    } else {
+      throw Exception('Failed to load suppliers');
+    }
   }
 }

@@ -175,7 +175,8 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final validToSubmit = context.select((LoginBloc bloc) => bloc.valid);
+    //final validToSubmit = context.select((LoginBloc bloc) => bloc.valid);
+    const validToSubmit = true;
 
     return OutlinedButton(
       onPressed: validToSubmit

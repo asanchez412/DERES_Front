@@ -21,11 +21,11 @@ extension QuestionTypeName on QuestionType {
 extension QuestionTypeExtension on QuestionType {
   static QuestionType fromString(String typeAsString) {
     switch (typeAsString) {
-      case 'Social':
+      case 'SOCIAL':
         return QuestionType.social;
-      case 'Ambiental':
+      case 'AMBIENTAL':
         return QuestionType.environmental;
-      case 'Gobernanza':
+      case 'GOBERNANZA':
         return QuestionType.governance;
 
       default:

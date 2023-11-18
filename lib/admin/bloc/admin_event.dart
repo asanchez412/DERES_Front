@@ -53,7 +53,7 @@ class AdminEditQuestion extends AdminEvent {
       {required this.questionId,
       required this.ponderation,
       required this.questionType});
-  final String questionId;
+  final int questionId;
   final String ponderation;
   final QuestionType questionType;
 

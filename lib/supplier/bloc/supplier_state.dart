@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:topicos/supplier/models/supplier_model.dart';
 
+enum SupplierStatus { initial, success, failure, loading }
+
 @immutable
 class SupplierState extends Equatable {
   const SupplierState({
@@ -9,15 +11,22 @@ class SupplierState extends Equatable {
     required this.name,
     required this.rut,
     required this.score,
+    required this.status,
   });
 
   const SupplierState.initial()
-      : this(suppliers: const <Supplier>[], name: '', rut: '', score: '');
+      : this(
+            suppliers: const <Supplier>[],
+            name: '',
+            rut: '',
+            score: '',
+            status: SupplierStatus.initial);
 
   final List<Supplier> suppliers;
   final String name;
   final String rut;
   final String score;
+  final SupplierStatus status;
 
   List<Supplier> get filteredSuppliers => _filterSuppliers();
 
@@ -27,15 +36,21 @@ class SupplierState extends Equatable {
         name,
         rut,
         score,
+        status,
       ];
 
   SupplierState copyWith(
-      {List<Supplier>? suppliers, String? name, String? rut, String? score}) {
+      {List<Supplier>? suppliers,
+      String? name,
+      String? rut,
+      String? score,
+      SupplierStatus? status}) {
     return SupplierState(
         suppliers: suppliers ?? this.suppliers,
         name: name ?? this.name,
         score: score ?? this.score,
-        rut: rut ?? this.rut);
+        rut: rut ?? this.rut,
+        status: status ?? this.status);
   }
 
   List<Supplier> _filterSuppliers() {

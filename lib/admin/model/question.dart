@@ -4,7 +4,7 @@ class Question {
   final String questionText;
   final QuestionType type;
   String ponderation;
-  final String id;
+  final int id;
 
   Question({
     required this.questionText,
@@ -24,9 +24,9 @@ class Question {
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
-        questionText: json['questionText'] as String,
+        questionText: json['question'] as String,
         type: QuestionTypeExtension.fromString(json['type'] as String),
         ponderation: json['ponderation'] as String,
-        id: json['id'] as String);
+        id: json['id'] as int);
   }
 }
