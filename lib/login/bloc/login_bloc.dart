@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:topicos/extensions/api.dart';
 import 'package:topicos/extensions/privilege.dart';
 import 'package:topicos/form_inputs/lib/form_inputs.dart';
 
@@ -29,32 +29,26 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginWithEmailAndPasswordRequested event,
     Emitter<LoginState> emit,
   ) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    try {
-      var client = http.Client();
-      var data = await client.fetchData(
-        url: 'http://localhost:8080/users/login',
-        headers: {
-          "user_name": state.email.value,
-          "password": state.password.value
-        },
-      );
-      if (data.containsKey('privilage')) {
-        String privilage = data['privilage'];
-        if (privilage == 'admin') {
-          emit(state.copyWith(privilege: Privilege.admin));
-        } else if (privilage == 'user') {
-          emit(state.copyWith(privilege: Privilege.user));
-        } else if (privilage == 'provider') {
-          emit(state.copyWith(privilege: Privilege.provider));
-        } else {
-          emit(state.copyWith(privilege: Privilege.all));
-        }
-      }
+    final url = Uri.parse('http://172.178.74.246:8080/login');
 
-      emit(state.copyWith(status: FormzSubmissionStatus.success));
-    } on Exception {
-      emit(state.copyWith(status: FormzSubmissionStatus.failure));
+    final body = jsonEncode(
+        {'user_name': state.email.value, 'password': state.password.value});
+
+    try {
+      final response = await http.post(
+        url,
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 202) {
+        emit(state.copyWith(
+            loginStatus: LoginStatus.success, privilege: Privilege.admin));
+      } else {
+        print('Failed to log in');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 

@@ -17,7 +17,7 @@ void main() {
 }
 
 final GoRouter _router = GoRouter(
-  initialLocation: HomePage.path,
+  initialLocation: LoginPage.path,
   routes: [
     GoRoute(
       path: SignInPage.path,
