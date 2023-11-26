@@ -5,6 +5,8 @@ import 'package:topicos/admin/bloc/admin_bloc.dart';
 import 'package:topicos/admin/bloc/admin_event.dart';
 import 'package:topicos/admin/view/admin_edit_poll.dart';
 import 'package:topicos/admin/view/admin_page.dart';
+import 'package:topicos/company/bloc/company_bloc.dart';
+import 'package:topicos/company/bloc/company_event.dart';
 import 'package:topicos/company/view/company_page.dart';
 import 'package:topicos/company/view/company_poll.dart';
 import 'package:topicos/home/view/home_page.dart';
@@ -17,7 +19,7 @@ void main() {
 }
 
 final GoRouter _router = GoRouter(
-  initialLocation: LoginPage.path,
+  initialLocation: HomePage.path,
   routes: [
     GoRoute(
       path: SignInPage.path,
@@ -35,18 +37,26 @@ final GoRouter _router = GoRouter(
       path: SupplierPage.path,
       pageBuilder: (context, state) => const SupplierPage(),
     ),
-    GoRoute(
-      path: CompanyPage.path,
-      pageBuilder: (context, state) => const CompanyPage(),
-    ),
-    GoRoute(
-      path: CompanyPollPage.path,
-      pageBuilder: (context, state) {
-        //CompanyBloc bloc = state.extra as CompanyBloc;
-        return const CompanyPollPage();
-        //CompanyPollPage(bloc: bloc);
-      },
-    ),
+    ShellRoute(
+        builder: (context, state, child) {
+          return BlocProvider<CompanyBloc>(
+            create: (ctx) =>
+                CompanyBloc()..add(const CompanyQuestionRequested()),
+            child: child,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: CompanyPage.path,
+            pageBuilder: (context, state) => const CompanyPage(),
+          ),
+          GoRoute(
+            path: CompanyPollPage.path,
+            pageBuilder: (context, state) {
+              return const CompanyPollPage();
+            },
+          ),
+        ]),
     ShellRoute(
       builder: (context, state, child) {
         return BlocProvider<AdminBloc>(
@@ -78,9 +88,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       theme: ThemeData(
         fontFamily: 'Montserrat',
-        appBarTheme: const AppBarTheme(color: Color(0xFF13B9FF)),
+        appBarTheme: const AppBarTheme(color: Colors.orange),
         colorScheme: ColorScheme.fromSwatch(
-          accentColor: const Color(0xFF13B9FF),
+          accentColor: Colors.orangeAccent,
         ),
       ),
       routerConfig: _router,

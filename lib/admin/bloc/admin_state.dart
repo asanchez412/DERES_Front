@@ -32,12 +32,27 @@ extension QuestionTypeExtension on QuestionType {
         throw ArgumentError('Unknown QuestionType: $typeAsString');
     }
   }
+
+  static String toStringQuestion(String typeAsString) {
+    switch (typeAsString) {
+      case 'SOCIAL':
+        return QuestionType.social.name;
+      case 'AMBIENTAL':
+        return QuestionType.environmental.name;
+      case 'GOBERNANZA':
+        return QuestionType.governance.name;
+
+      default:
+        throw ArgumentError('Unknown QuestionType: $typeAsString');
+    }
+  }
 }
 
 enum AdminStatus {
   initial,
   inProgress,
   success,
+  pollSuccess,
   failure,
 }
 

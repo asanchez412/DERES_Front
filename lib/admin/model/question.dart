@@ -15,8 +15,8 @@ class Question {
 
   Map<String, dynamic> toJson() {
     return {
-      'questionText': questionText,
-      'type': type,
+      'question': questionText,
+      'type': type.name.toUpperCase(),
       'ponderation': ponderation,
       'id': id,
     };

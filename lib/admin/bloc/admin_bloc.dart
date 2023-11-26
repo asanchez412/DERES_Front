@@ -7,7 +7,6 @@ import 'package:topicos/admin/bloc/admin_event.dart';
 import 'package:topicos/admin/bloc/admin_state.dart';
 import 'package:topicos/admin/model/poll.dart';
 import 'package:topicos/admin/model/question.dart';
-import 'package:topicos/extensions/api.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   AdminBloc() : super(const AdminState.initial()) {
@@ -32,14 +31,23 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   FutureOr<void> _onAdminQuestionSubmitted(
       AdminQuestionSubmitted event, Emitter<AdminState> emit) async {
     try {
-      var client = http.Client();
-      await client.fetchData(
-        url: 'http://localhost:8080/addQuestion',
-        headers: {
-          "questions": state.question,
-        },
+      final url = Uri.parse(
+        'http://172.178.74.246:8080/addQuestion',
       );
-      emit(state.copyWith(status: AdminStatus.success));
+      var client = http.Client();
+
+      final body = jsonEncode({'questions': state.questions});
+
+      final response = await client.post(
+        url,
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 201) {
+        emit(state.copyWith(status: AdminStatus.pollSuccess));
+      } else {
+        emit(state.copyWith(status: AdminStatus.failure));
+      }
     } catch (e) {
       emit(state.copyWith(status: AdminStatus.failure));
     }
@@ -52,7 +60,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         type: state.questionType,
         ponderation: '0',
         id: 0);
-
+    final newListOfQuestion = List<Question>.from(state.questions)
+      ..add(newQuestion);
     List<Poll> updatedPolls = [];
     for (var poll in state.poll) {
       if (poll.questionType == state.questionType) {
@@ -67,7 +76,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       }
     }
 
-    emit(state.copyWith(poll: updatedPolls));
+    emit(state.copyWith(poll: updatedPolls, questions: newListOfQuestion));
   }
 
   FutureOr<void> _onAdminQuestionRequested(
@@ -78,26 +87,27 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
       emit(state.copyWith(status: AdminStatus.success));
     } catch (e) {
-      print(e);
       emit(state.copyWith(status: AdminStatus.failure));
     }
   }
 
-  FutureOr<void> _onAdminEditQuestion(
-      AdminEditQuestion event, Emitter<AdminState> emit) {
+  Future<void> _onAdminEditQuestion(
+      AdminEditQuestion event, Emitter<AdminState> emit) async {
     List<Poll> updatedPolls = state.poll.map((poll) {
       List<Question> updatedQuestions = poll.questions.map((question) {
         final ponderation = state.calculatePonderation();
-        if (ponderation![event.questionType]! + int.parse(event.ponderation) <=
-            100) {
-          if (question.id == event.questionId) {
-            return Question(
-              questionText: question.questionText,
-              type: question.type,
-              ponderation: event.ponderation,
-              id: question.id,
-            );
-          }
+        // if (ponderation![event.questionType]! + int.parse(event.ponderation) <=
+        //     100) {
+        if (question.id == event.questionId) {
+          final newQuestion = Question(
+            questionText: question.questionText,
+            type: question.type,
+            ponderation: event.ponderation,
+            id: question.id,
+          );
+          _editQuestion(newQuestion);
+          return newQuestion;
+          // }
         }
 
         return question;
@@ -109,7 +119,21 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       );
     }).toList();
 
-    emit(state.copyWith(poll: updatedPolls));
+    emit(state.copyWith(
+      poll: updatedPolls,
+    ));
+  }
+
+  Future<int> _editQuestion(Question question) async {
+    final url = Uri.parse('http://172.178.74.246:8080/modifyQuestion');
+    var client = http.Client();
+    final body = jsonEncode(question);
+    final response = await client.patch(
+      url,
+      body: body,
+      headers: {'Content-Type': 'application/json'},
+    );
+    return response.statusCode;
   }
 }
 

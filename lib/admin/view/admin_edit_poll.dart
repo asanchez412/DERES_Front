@@ -5,6 +5,7 @@ import 'package:topicos/admin/bloc/admin_bloc.dart';
 import 'package:topicos/admin/bloc/admin_event.dart';
 import 'package:topicos/admin/bloc/admin_state.dart';
 import 'package:topicos/admin/model/question.dart';
+import 'package:topicos/admin/view/admin_page.dart';
 import 'package:topicos/home/view/home_page.dart';
 
 class AdminPollPage extends Page<void> {
@@ -20,7 +21,24 @@ class AdminPollPage extends Page<void> {
       fullscreenDialog: true,
       settings: this,
       builder: (context) {
-        return const AdminPollView();
+        return BlocListener<AdminBloc, AdminState>(
+          listener: (context, state) {
+            if (state.status == AdminStatus.pollSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                backgroundColor: Colors.orange,
+                content: Text(
+                  'Encuesta actualizada con exito',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ));
+              return context.go(AdminPage.path);
+            }
+          },
+          listenWhen: (previous, current) {
+            return previous.status != current.status;
+          },
+          child: const AdminPollView(),
+        );
       },
     );
   }

@@ -16,12 +16,6 @@ class AdminView extends StatelessWidget {
           },
           child: Row(
             children: [
-              const Text(
-                'Administrador',
-              ),
-              const SizedBox(
-                width: 10,
-              ),
               Container(
                 width: 40.0,
                 height: 40.0,
@@ -33,6 +27,12 @@ class AdminView extends StatelessWidget {
                       fit: BoxFit.cover,
                       scale: 2),
                 ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              const Text(
+                'Administrador',
               ),
             ],
           ),
@@ -80,7 +80,6 @@ class AdminView extends StatelessWidget {
                         onPressed: () => {
                           context.go(
                             AdminPollPage.path,
-                            //extra: context.read<CompanyBloc>()
                           )
                         },
                         style: ElevatedButton.styleFrom(

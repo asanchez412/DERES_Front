@@ -8,10 +8,34 @@ abstract class CompanyEvent extends Equatable {
 
 class CompanyQuestionChanged extends CompanyEvent {
   const CompanyQuestionChanged({
-    required this.question,
+    required this.id,
+    required this.selectedQuestion,
   });
 
-  final String question;
+  final int id;
+  final bool selectedQuestion;
+
   @override
-  List<Object?> get props => [question];
+  List<Object?> get props => [id, selectedQuestion];
+}
+
+class CompanyQuestionRequested extends CompanyEvent {
+  const CompanyQuestionRequested();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class CompanyQuestionSubmitted extends CompanyEvent {
+  const CompanyQuestionSubmitted();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class CompanyInformationRequest extends CompanyEvent {
+  const CompanyInformationRequest();
+
+  @override
+  List<Object?> get props => [];
 }

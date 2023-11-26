@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:topicos/admin/bloc/admin_state.dart';
+import 'package:topicos/admin/model/question.dart';
+import 'package:topicos/company/bloc/company_bloc.dart';
+import 'package:topicos/company/bloc/company_event.dart';
+import 'package:topicos/company/bloc/company_state.dart';
+import 'package:topicos/company/view/company_page.dart';
 import 'package:topicos/home/view/home_page.dart';
 
 class CompanyPollPage extends Page<void> {
   const CompanyPollPage({
     super.key,
-    //required this.bloc
   });
 
   static const path = '/company-poll';
-  //final CompanyBloc bloc;
 
   @override
   Route<void> createRoute(BuildContext context) {
@@ -17,11 +22,21 @@ class CompanyPollPage extends Page<void> {
       fullscreenDialog: true,
       settings: this,
       builder: (context) {
-        return const CompanyPollView();
-        // BlocProvider.value(
-        //   value: bloc,
-        //   child: const CompanyPollView(),
-        // );
+        return BlocListener<CompanyBloc, CompanyState>(
+          listener: (context, state) {
+            if (state.status == CompanyStatus.pollSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                backgroundColor: Colors.orange,
+                content: Text(
+                  'Encuesta realizada con exito',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ));
+              return context.go(CompanyPage.path);
+            }
+          },
+          child: const CompanyPollView(),
+        );
       },
     );
   }
@@ -64,23 +79,54 @@ class CompanyPollView extends StatelessWidget {
         centerTitle: false,
         backgroundColor: Colors.orangeAccent,
       ),
-      body: const SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
-              child: Text(
-                'Encuesta para Proveedores ',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+      body: const _ContentPoll(),
+    );
+  }
+}
+
+class _ContentPoll extends StatelessWidget {
+  const _ContentPoll();
+
+  @override
+  Widget build(BuildContext context) {
+    final poll = context.select((CompanyBloc bloc) => bloc.state.poll);
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
+            child: Text(
+              'Encuesta para Proveedores ',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            _Environmental(),
-            _Social(),
-            _Governance(),
-            _ButtonSend(),
-            SizedBox(height: 40),
-          ],
-        ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height - 20,
+            child: ListView.builder(
+                itemCount: poll.length,
+                shrinkWrap: false,
+                itemBuilder: (context, index) {
+                  switch (poll[index].questionType) {
+                    case QuestionType.environmental:
+                      return _Environmental(
+                        questions: poll[index].questions,
+                      );
+                    case QuestionType.governance:
+                      return _Governance(
+                        questions: poll[index].questions,
+                      );
+                    case QuestionType.social:
+                      return _Social(
+                        questions: poll[index].questions,
+                      );
+                    default:
+                  }
+                  return null;
+                }),
+          ),
+          const _ButtonSend(),
+          const SizedBox(height: 40),
+        ],
       ),
     );
   }
@@ -92,7 +138,8 @@ class _ButtonSend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () => (),
+      onPressed: () =>
+          (context.read<CompanyBloc>().add(const CompanyQuestionSubmitted())),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: Colors.orangeAccent,
@@ -105,8 +152,9 @@ class _ButtonSend extends StatelessWidget {
 }
 
 class _Governance extends StatelessWidget {
-  const _Governance();
+  const _Governance({required this.questions});
 
+  final List<Question> questions;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -119,43 +167,29 @@ class _Governance extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        _Checkbox(
-          question:
-              '¿Tiene un código de conducta ética que deben seguir todos los empleados y directivos?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Publica informes financieros de manera regular y transparente?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Tiene políticas y medidas en vigor para prevenir la corrupción y el soborno?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Desarrolla proyectos o iniciativas de responsabilidad social corporativa?',
-          onChanged: () {},
-        ),
-        CheckboxListTile(
-          title: const Text('¿Realiza su logística en vehículos eléctricos?'),
-          value: false,
-          onChanged: (bool? value) {
-            // setState(() {
-            //   usesElectricVehicles = value;
-            // });
+        ListView.builder(
+          itemCount: questions.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return _Checkbox(
+              question: questions[index],
+            );
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(
+          height: 20,
+        ),
       ],
     );
   }
 }
 
 class _Social extends StatelessWidget {
-  const _Social();
+  const _Social({
+    required this.questions,
+  });
+
+  final List<Question> questions;
 
   @override
   Widget build(BuildContext context) {
@@ -169,36 +203,17 @@ class _Social extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        _Checkbox(
-          question: '¿Tiene políticas de diversidad e inclusión?',
-          onChanged: () {},
+        ListView.builder(
+          itemCount: questions.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return _Checkbox(
+              question: questions[index],
+            );
+          },
         ),
-        _Checkbox(
-          question:
-              '¿Ofrece programas de salud y bienestar para sus empleados?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Proporciona oportunidades regulares de formación y desarrollo para sus empleados?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Se compromete a pagar salarios justos y equitativos a sus empleados?',
-          onChanged: () {},
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 2,
-          child: TextFormField(
-            decoration: const InputDecoration(
-              labelText:
-                  '¿Cuántos funcionarios transgénero tiene en su plantilla?',
-            ),
-            onChanged: (value) => (),
-            validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-            keyboardType: TextInputType.number,
-          ),
+        const SizedBox(
+          height: 20,
         ),
       ],
     );
@@ -206,7 +221,10 @@ class _Social extends StatelessWidget {
 }
 
 class _Environmental extends StatelessWidget {
-  const _Environmental();
+  const _Environmental({
+    required this.questions,
+  });
+  final List<Question> questions;
 
   @override
   Widget build(BuildContext context) {
@@ -214,32 +232,23 @@ class _Environmental extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Padding(
-          padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
+          padding: EdgeInsets.only(left: 20, top: 30, bottom: 20),
           child: Text(
             'Evaluación Ambiental',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-        _Checkbox(
-          question: '¿Recicla en su proceso productivo?',
-          onChanged: () {},
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: questions.length,
+          itemBuilder: (context, index) {
+            return _Checkbox(
+              question: questions[index],
+            );
+          },
         ),
-        _Checkbox(
-          question: '¿Realiza su logística en vehículos eléctricos?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question: '¿Utiliza fuentes de energía renovable en su operación?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question: '¿Tiene un programa para reducir y gestionar residuos?',
-          onChanged: () {},
-        ),
-        _Checkbox(
-          question:
-              '¿Implementa prácticas de conservación de agua en sus operaciones?',
-          onChanged: () {},
+        const SizedBox(
+          height: 20,
         ),
       ],
     );
@@ -249,120 +258,20 @@ class _Environmental extends StatelessWidget {
 class _Checkbox extends StatelessWidget {
   const _Checkbox({
     required this.question,
-    required this.onChanged,
   });
 
-  final String question;
-  final VoidCallback onChanged;
+  final Question question;
+
   @override
   Widget build(BuildContext context) {
+    final selectedQuestion =
+        context.select((CompanyBloc bloc) => bloc.state.selectedQuestions);
     return CheckboxListTile(
-        title: Text(question),
-        value: false,
+        title: Text(question.questionText),
+        value: selectedQuestion[question.id.toString()],
         onChanged: ((value) {
-          onChanged;
+          context.read<CompanyBloc>().add(CompanyQuestionChanged(
+              id: question.id, selectedQuestion: value ?? false));
         }));
-  }
-}
-
-class _PersonalForm extends StatelessWidget {
-  const _PersonalForm();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 10, top: 30, bottom: 20),
-            child: Text(
-              'Datos de la Empresa ',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Nombre'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration:
-                        const InputDecoration(labelText: 'Razón Social'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Dirección'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Teléfono'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration:
-                        const InputDecoration(labelText: 'Email de Contacto'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    decoration:
-                        const InputDecoration(labelText: 'Persona de Contacto'),
-                    onChanged: (value) => (),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-        ],
-      ),
-    );
   }
 }

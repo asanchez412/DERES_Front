@@ -116,8 +116,6 @@ class LoginView extends StatelessWidget {
   }
 }
 
-// ... (Resto de los widgets)
-
 class EmailTextField extends StatelessWidget {
   const EmailTextField({super.key});
 
@@ -131,9 +129,8 @@ class EmailTextField extends StatelessWidget {
     return TextField(
       onChanged: (value) =>
           context.read<LoginBloc>().add(LoginEmailChanged(value)),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: 'Email',
-        errorText: valid ? null : 'Please enter a valid email',
       ),
       keyboardType: TextInputType.emailAddress,
     );
