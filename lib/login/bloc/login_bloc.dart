@@ -51,7 +51,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           emit(state.copyWith(
               loginStatus: LoginStatus.success, privilege: Privilege.admin));
         } else if (privilege == 'PROVIDER') {
-          final provider = jsonDecode(response.body)['providerID'];
+          final provider = jsonDecode(response.body)['provider_id'];
           if (provider != null) {
             final SharedPreferences prefs =
                 await SharedPreferences.getInstance();

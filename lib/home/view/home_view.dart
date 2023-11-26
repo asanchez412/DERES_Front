@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:topicos/admin/view/admin_page.dart';
 import 'package:topicos/login/view/view.dart';
 
 class HomeView extends StatelessWidget {
@@ -70,19 +69,6 @@ class HomeView extends StatelessWidget {
                       child: const Text('Iniciar Sesión'),
                     ),
                     const SizedBox(width: 20),
-                    OutlinedButton(
-                      onPressed: () => context.go(
-                        AdminPage.path,
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 15),
-                        textStyle: const TextStyle(fontSize: 18),
-                      ),
-                      child: const Text('Registrarse'),
-                    ),
                   ],
                 ),
               ],

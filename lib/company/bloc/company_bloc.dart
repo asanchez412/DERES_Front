@@ -75,13 +75,13 @@ class CompanyBloc extends Bloc<CompanyEvent, CompanyState> {
     var url = Uri.parse('http://172.178.74.246:8080/answers/$providerRut');
     var client = http.Client();
     final json = await createListFromMap(state.selectedQuestions);
-    final body = jsonEncode(json);
-    final response = await client.patch(
+    final body = jsonEncode({'questions': json});
+    final response = await client.post(
       url,
       body: body,
       headers: {'Content-Type': 'application/json'},
     );
-    if (response.statusCode == 202) {
+    if (response.statusCode == 201) {
       emit(state.copyWith(status: CompanyStatus.pollSuccess));
     } else {
       emit(state.copyWith(status: CompanyStatus.failure));
@@ -116,18 +116,18 @@ class CompanyBloc extends Bloc<CompanyEvent, CompanyState> {
     var response = await http.get(url);
 
     if (response.statusCode == 202) {
-      var data = jsonDecode(response.body);
+      final data = jsonDecode(response.body);
       final companyData = CompanyData(
-          name: data['name'],
-          email: data['email'],
-          address: data['address'],
-          phone: data['phone'],
-          rut: data['rut'],
-          score: data['score']);
+        name: data['name'],
+        email: data['email'],
+        address: data['address'] ?? '',
+        phone: data['phone'],
+        rut: data['rut'],
+        score: data['score'] ?? 0,
+      );
       emit(state.copyWith(companyData: companyData));
     } else {
-      throw Exception(
-          'Error al obtener los datos del proveedor: ${response.statusCode}');
+      emit(state.copyWith(status: CompanyStatus.failure));
     }
   }
 }

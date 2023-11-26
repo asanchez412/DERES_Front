@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:topicos/company/bloc/company_bloc.dart';
+import 'package:topicos/company/bloc/company_state.dart';
 import 'package:topicos/company/view/company_poll.dart';
 import 'package:topicos/home/view/home_page.dart';
 
@@ -42,17 +43,24 @@ class CompanyView extends StatelessWidget {
         centerTitle: false,
         backgroundColor: Colors.orangeAccent,
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               child: Text(
                 'Bienvenido a Nuestra Web',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
             ),
-            _DataCompany()
+            BlocBuilder<CompanyBloc, CompanyState>(
+              buildWhen: (previous, current) {
+                return previous.companyData != current.companyData;
+              },
+              builder: (context, state) {
+                return const _DataCompany();
+              },
+            )
           ],
         ),
       ),
